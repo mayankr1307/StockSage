@@ -47,11 +47,36 @@ function Dashboard() {
             <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-blue-800 border-b pb-2 border-blue-100">
               Market Overview
             </h2>
-            {/* Add your stock prediction components here */}
-            <div className="mb-6 sm:mb-8">
-              <p className="text-gray-500">
-                Stock prediction features coming soon...
-              </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 sm:mb-8">
+              <button
+                onClick={() => router.push("/predictions")}
+                className="flex items-center justify-center p-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+              >
+                <div className="text-center">
+                  <div className="text-white text-2xl mb-2">🎯</div>
+                  <h3 className="text-white text-lg font-semibold">
+                    Get Stock Predictions
+                  </h3>
+                  <p className="text-blue-100 text-sm mt-1">
+                    Analyze and predict stock movements
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => router.push("/history")}
+                className="flex items-center justify-center p-6 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg shadow-md hover:from-purple-600 hover:to-purple-700 transition-all duration-200"
+              >
+                <div className="text-center">
+                  <div className="text-white text-2xl mb-2">📊</div>
+                  <h3 className="text-white text-lg font-semibold">
+                    Prediction History
+                  </h3>
+                  <p className="text-purple-100 text-sm mt-1">
+                    View your past predictions
+                  </p>
+                </div>
+              </button>
             </div>
 
             {/* News Section */}
