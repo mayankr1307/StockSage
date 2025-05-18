@@ -32,6 +32,17 @@ interface RSIData {
     rsi: string;
   }>;
   status: string;
+  timeSeries: Array<{
+    datetime: string;
+    close: string;
+    high: string;
+    low: string;
+    open: string;
+  }>;
+  prediction: {
+    nextDay: string;
+    lastPrice: string;
+  };
 }
 
 function Predictions() {
@@ -305,6 +316,49 @@ function Predictions() {
                       </p>
                     </div>
                   </div>
+
+                  {/* Price Prediction Section */}
+                  <div className="mt-6 p-4 bg-white rounded-lg border-2 border-blue-100">
+                    <div className="mb-4">
+                      <h4 className="text-lg font-semibold text-blue-900">
+                        Price Prediction
+                      </h4>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          Last Closing Price
+                        </p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          ${rsiData.prediction.lastPrice}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          Predicted Next Close
+                        </p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          ${rsiData.prediction.nextDay}
+                        </p>
+                        <p className="text-sm text-blue-500 mt-1">
+                          {Number(rsiData.prediction.nextDay) >
+                          Number(rsiData.prediction.lastPrice)
+                            ? "↗ Expected to rise"
+                            : "↘ Expected to fall"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 bg-yellow-50 p-3 rounded-md">
+                      <p className="text-sm text-yellow-800">
+                        <span className="font-medium">Note:</span> This
+                        prediction is based on historical data and technical
+                        analysis. Market conditions can change rapidly and past
+                        performance does not guarantee future results.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
@@ -368,7 +422,7 @@ function Predictions() {
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                   <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                     <h4 className="text-lg font-medium text-gray-900">
-                      RSI History
+                      Historical Data
                     </h4>
                   </div>
                   <div className="overflow-x-auto">
@@ -377,6 +431,12 @@ function Predictions() {
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Date
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Close Price
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Change
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             RSI Value
@@ -389,6 +449,17 @@ function Predictions() {
                       <tbody className="bg-white divide-y divide-gray-200">
                         {rsiData.values.slice(0, 10).map((value, index) => {
                           const rsiValue = Number(value.rsi);
+                          const currentPrice = Number(
+                            rsiData.timeSeries[index].close
+                          );
+                          const previousPrice =
+                            index < rsiData.timeSeries.length - 1
+                              ? Number(rsiData.timeSeries[index + 1].close)
+                              : currentPrice;
+                          const priceChange =
+                            ((currentPrice - previousPrice) / previousPrice) *
+                            100;
+
                           let signal = "Neutral";
                           let signalColor = "text-gray-600";
 
@@ -405,8 +476,24 @@ function Predictions() {
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {formatDate(value.datetime)}
                               </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                $
+                                {Number(
+                                  rsiData.timeSeries[index].close
+                                ).toFixed(2)}
+                              </td>
+                              <td
+                                className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
+                                  priceChange >= 0
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }`}
+                              >
+                                {priceChange >= 0 ? "↑" : "↓"}{" "}
+                                {Math.abs(priceChange).toFixed(2)}%
+                              </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-800">
-                                {Number(value.rsi).toFixed(2)}
+                                {rsiValue.toFixed(2)}
                               </td>
                               <td
                                 className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${signalColor}`}
