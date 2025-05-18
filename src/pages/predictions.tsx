@@ -338,7 +338,43 @@ function Predictions() {
               </div>
             )}
 
-            {rsiData && (
+            {rsiData && (!rsiData.meta || !rsiData.prediction) && (
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                <div className="flex items-center">
+                  <svg
+                    className="h-5 w-5 text-yellow-400 mr-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div>
+                    <p className="font-medium text-yellow-800">
+                      Data Unavailable
+                    </p>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      The data for symbol "{symbol}" is currently unavailable or
+                      incomplete. This might happen if:
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-yellow-700 mt-2">
+                      <li>The symbol is not actively traded</li>
+                      <li>There was an issue with the data provider</li>
+                      <li>The market is currently closed</li>
+                    </ul>
+                    <p className="text-sm text-yellow-700 mt-2">
+                      Please try again later or try a different symbol.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {rsiData && rsiData.meta && rsiData.prediction && (
               <div className="mt-8 space-y-6">
                 <div className="bg-blue-50 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-blue-900 mb-4">
