@@ -1,7 +1,7 @@
 import { useAuth } from "../contexts/AuthContext";
 import { withAuth } from "../components/withAuth";
 import { useRouter } from "next/router";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface Prediction {
   id: string;
@@ -20,6 +20,8 @@ function History() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
+  const isInitialMount = useRef(true);
+  const updateInterval = useRef<NodeJS.Timeout | null>(null);
 
   const fetchPredictions = useCallback(async () => {
     if (!user) {
@@ -91,19 +93,34 @@ function History() {
     fetchPredictions();
   }, [fetchPredictions]);
 
-  useEffect(() => {
-    updateActualPrices();
-  }, [updateActualPrices]);
-
   // Check for updates every 5 minutes if there are pending predictions
   useEffect(() => {
     const hasPendingPredictions = predictions.some(
       (prediction) => !prediction.actualPrice
     );
 
+    // Clear existing interval if any
+    if (updateInterval.current) {
+      clearInterval(updateInterval.current);
+      updateInterval.current = null;
+    }
+
     if (hasPendingPredictions) {
-      const interval = setInterval(updateActualPrices, 5 * 60 * 1000);
-      return () => clearInterval(interval);
+      // Only do immediate update on initial mount
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        updateActualPrices();
+      }
+
+      // Set up interval for subsequent checks
+      updateInterval.current = setInterval(updateActualPrices, 5 * 60 * 1000); // 5 minutes
+
+      return () => {
+        if (updateInterval.current) {
+          clearInterval(updateInterval.current);
+          updateInterval.current = null;
+        }
+      };
     }
   }, [predictions, updateActualPrices]);
 
