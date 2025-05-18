@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid as MuiGrid,
-  Box,
-  CircularProgress,
-} from "@mui/material";
+import { Card, Typography, Grid, Box, CircularProgress } from "@mui/material";
 
 interface NewsItem {
   title: string;
@@ -81,9 +74,9 @@ const StockNews = () => {
       >
         📰 Market News
       </Typography>
-      <MuiGrid container spacing={3}>
+      <Grid container spacing={3}>
         {news.map((item, index) => (
-          <MuiGrid item xs={12} sm={6} md={4} key={index}>
+          <Grid item xs={12} sm={6} md={4} key={index}>
             <Card
               sx={{
                 width: "100%",
@@ -190,9 +183,9 @@ const StockNews = () => {
                 </Typography>
               </Box>
             </Card>
-          </MuiGrid>
+          </Grid>
         ))}
-      </MuiGrid>
+      </Grid>
     </Box>
   );
 };

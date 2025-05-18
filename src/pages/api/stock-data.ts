@@ -1,6 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getPricePrediction } from '../../utils/predictionModel';
 
+interface TimeSeriesValue {
+  close: string;
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -33,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ]);
 
     // Prepare data for the prediction model
-    const historicalPrices = timeSeriesData.values.map((value: any) => parseFloat(value.close));
+    const historicalPrices = timeSeriesData.values.map((value: TimeSeriesValue) => parseFloat(value.close));
 
     // Get prediction from the ML model
     const modelPrediction = await getPricePrediction({

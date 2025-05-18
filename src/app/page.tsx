@@ -1,6 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
-import { headers } from "next/headers";
 
 export default function Home() {
   return (

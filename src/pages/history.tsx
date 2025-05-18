@@ -1,7 +1,7 @@
 import { useAuth } from "../contexts/AuthContext";
 import { withAuth } from "../components/withAuth";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface Prediction {
   id: string;
@@ -21,7 +21,7 @@ function History() {
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
 
-  const fetchPredictions = async () => {
+  const fetchPredictions = useCallback(async () => {
     if (!user) {
       setLoading(false);
       return;
@@ -45,9 +45,9 @@ function History() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const updateActualPrices = async () => {
+  const updateActualPrices = useCallback(async () => {
     if (!user || updating) return;
 
     setUpdating(true);
@@ -85,28 +85,27 @@ function History() {
     } finally {
       setUpdating(false);
     }
-  };
+  }, [user, updating, fetchPredictions]);
 
   useEffect(() => {
     fetchPredictions();
-  }, [user]);
+  }, [fetchPredictions]);
+
+  useEffect(() => {
+    updateActualPrices();
+  }, [updateActualPrices]);
 
   // Check for updates every 5 minutes if there are pending predictions
   useEffect(() => {
-    if (!predictions.length) return;
+    const hasPendingPredictions = predictions.some(
+      (prediction) => !prediction.actualPrice
+    );
 
-    // Check if there are any pending predictions
-    const hasPendingPredictions = predictions.some((p) => !p.actualPrice);
-
-    if (!hasPendingPredictions) return;
-
-    const intervalId = setInterval(updateActualPrices, 5 * 60 * 1000);
-
-    // Initial check
-    updateActualPrices();
-
-    return () => clearInterval(intervalId);
-  }, [predictions]);
+    if (hasPendingPredictions) {
+      const interval = setInterval(updateActualPrices, 5 * 60 * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [predictions, updateActualPrices]);
 
   const calculateAccuracy = (predicted: string, actual: string) => {
     const predictedNum = parseFloat(predicted);

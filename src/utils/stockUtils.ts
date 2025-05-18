@@ -11,6 +11,12 @@ export const POPULAR_STOCKS = [
   { symbol: 'WMT', name: 'Walmart Inc.' }
 ];
 
+interface StockQuote {
+  symbol: string;
+  shortname?: string;
+  longname?: string;
+}
+
 export async function searchStockSymbols(query: string): Promise<Array<{ symbol: string; name: string }>> {
   if (!query) return POPULAR_STOCKS;
 
@@ -22,7 +28,7 @@ export async function searchStockSymbols(query: string): Promise<Array<{ symbol:
     }
 
     const data = await response.json();
-    return data.map((quote: any) => ({
+    return data.map((quote: StockQuote) => ({
       symbol: quote.symbol,
       name: quote.shortname || quote.longname || quote.symbol
     }));

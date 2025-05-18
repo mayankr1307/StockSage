@@ -91,8 +91,8 @@ function Predictions() {
     setSuggestions(POPULAR_STOCKS);
   }, []);
 
-  const debouncedSearch = useCallback(
-    debounce(async (query: string) => {
+  const debouncedSearch = useCallback((query: string) => {
+    const search = async () => {
       if (query.length < 2) {
         setSuggestions([]);
         setSearchLoading(false);
@@ -104,9 +104,10 @@ function Predictions() {
       } finally {
         setSearchLoading(false);
       }
-    }, 300),
-    []
-  );
+    };
+
+    debounce(search, 300)();
+  }, []);
 
   const handleSymbolChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -358,8 +359,8 @@ function Predictions() {
                       Data Unavailable
                     </p>
                     <p className="text-sm text-yellow-700 mt-1">
-                      The data for symbol "{symbol}" is currently unavailable or
-                      incomplete. This might happen if:
+                      The data for symbol &ldquo;{symbol}&rdquo; is currently
+                      unavailable or incomplete. This might happen if:
                     </p>
                     <ul className="list-disc list-inside text-sm text-yellow-700 mt-2">
                       <li>The symbol is not actively traded</li>
@@ -378,7 +379,7 @@ function Predictions() {
               <div className="mt-8 space-y-6">
                 <div className="bg-blue-50 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-blue-900 mb-4">
-                    {rsiData.meta.symbol} - {rsiData.meta.type} (
+                    &ldquo;{rsiData.meta.symbol}&rdquo; - {rsiData.meta.type} (
                     {rsiData.meta.exchange})
                   </h3>
                   <div className="grid grid-cols-2 gap-4 mb-6">
